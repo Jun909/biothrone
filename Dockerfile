@@ -1,19 +1,15 @@
 # ── Builder stage ────────────────────────────────────────────────────────────
 FROM python:3.12-slim AS builder
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    PIP_NO_CACHE_DIR=1 \
-    POETRY_VERSION=2.1.2 \
-    POETRY_VIRTUALENVS_IN_PROJECT=true \
-    POETRY_NO_INTERACTION=1
-
-RUN pip install "poetry==$POETRY_VERSION"
+    UV_NO_CACHE=1
 
 WORKDIR /app
 
-COPY pyproject.toml poetry.lock ./
-RUN poetry install --only main --no-root
+COPY pyproject.toml uv.lock ./
+RUN uv sync --locked --no-install-project --no-dev
 
 # ── Runtime stage ─────────────────────────────────────────────────────────────
 FROM python:3.12-slim AS runtime

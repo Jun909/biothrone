@@ -10,8 +10,8 @@ biosignalfoundry/
 ├── .gitignore                    # Git ignore rules
 ├── config.py                     # Centralized configuration management
 ├── llm_provider.py               # LLM provider setup (Ollama or DeepSeek, via LLM_PROVIDER env)
-├── pyproject.toml                # Poetry dependencies and project config
-├── poetry.lock                   # Locked dependency versions
+├── pyproject.toml                # uv dependencies and project config
+├── uv.lock                       # Locked dependency versions
 ├── README.md                     # Project documentation
 ├── Dockerfile                    # Docker image definition
 ├── docker-compose.yml            # Docker services configuration (PostgreSQL, Redis)
@@ -156,7 +156,7 @@ Mock-based unit tests for core engine logic. Heavy dependencies (data providers,
 ### **Configuration Files**
 - **config.py**: Centralized app configuration. Currently defines Redis connection settings (`REDIS_HOST`, `REDIS_PORT`, `REDIS_DB`), per-provider cache TTLs (`REDIS_CACHE_TTL_SECONDS_ALPHAVANTAGE`, `REDIS_CACHE_TTL_SECONDS_MARKETSTACK`), and reads `ALPHAVANTAGE_API_KEY` / `FINNHUB_API_KEY` from the environment.
 - **llm_provider.py**: Instantiates the LLM based on the `LLM_PROVIDER` environment variable. Supported values: `ollama` (Mistral via Ollama) and `deepseek` (DeepSeek Chat via `langchain_deepseek`).
-- **pyproject.toml**: Project metadata, dependencies, poetry configuration
+- **pyproject.toml**: Project metadata, dependencies, uv configuration
 
 ### **Docker**
 - **Dockerfile**: Container image for the application
