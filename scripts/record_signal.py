@@ -3,9 +3,9 @@ Record a paper trading signal: run the agent for a ticker,
 fetch today's entry price, and append to the signal log.
 
 Usage:
-    poetry run python scripts/record_signal.py            # run all tickers in WATCHLIST
-    poetry run python scripts/record_signal.py MRNA       # single ticker
-    poetry run python scripts/record_signal.py MRNA --holding-days 14
+    uv run python scripts/record_signal.py            # run all tickers in WATCHLIST
+    uv run python scripts/record_signal.py MRNA       # single ticker
+    uv run python scripts/record_signal.py MRNA --holding-days 14
 """
 
 import argparse

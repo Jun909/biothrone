@@ -10,11 +10,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v3
       - uses: actions/setup-python@v5
         with:
           python-version: "3.14"
-      - run: pip install poetry
-      - run: poetry check --lock
+      - run: uv lock --check
 
   unit:
     name: Unit tests
@@ -22,11 +22,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v3
       - uses: actions/setup-python@v5
         with:
           python-version: "3.14"
-      - run: pip install -e ".[dev]"
-      - run: pytest tests/unit/ -v
+      - run: uv sync --locked --extra dev
+      - run: uv run pytest tests/unit/ -v
         env:
           ALPHAVANTAGE_API_KEY: ${{ secrets.ALPHAVANTAGE_API_KEY }}
 
@@ -46,10 +47,11 @@ jobs:
           --health-retries 5
     steps:
       - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v3
       - uses: actions/setup-python@v5
         with:
           python-version: "3.14"
-      - run: pip install -e ".[dev]"
-      - run: pytest tests/integration/ -v
+      - run: uv sync --locked --extra dev
+      - run: uv run pytest tests/integration/ -v
         env:
           ALPHAVANTAGE_API_KEY: ${{ secrets.ALPHAVANTAGE_API_KEY }}
