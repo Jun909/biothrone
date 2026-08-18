@@ -89,12 +89,16 @@ For these reasons, the evaluation strategy used here is **paper trading**: the a
 
 ### Phase 1 — Stabilization
 * Persistent storage of decisions and signals (PostgreSQL + Alembic)
-* Integration test suite and CI/CD pipeline
+* ~~Integration test suite and CI/CD pipeline~~ ✅ Done — see `.github/workflows/test.yml`
 * Health and readiness endpoints
 
 ### Phase 2 — Signal Completeness
 * Wire remaining subagents: clinical (OpenFDA), macro (FRED), sentiment (Finnhub)
-* Paper trading loop: record decisions and track returns over time
+* Paper trading loop: record decisions and track returns over time (manual today via
+  `scripts/record_signal.py` / `scripts/evaluate_signals.py`)
+* Automate the paper trading loop to run on a schedule instead of by hand
+  (mechanism TBD)
+* RAG over SEC filings (10-K/10-Q) for grounded, citable reasoning
 * Data quality validation layer
 
 ### Phase 3 — Scalability
