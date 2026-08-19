@@ -88,31 +88,62 @@ For these reasons, the evaluation strategy used here is **paper trading**: the a
 ## Planned Roadmap
 
 ### Phase 1 — Stabilization
-* Persistent storage of decisions and signals (PostgreSQL + Alembic)
+* Persistent storage of decisions and signals (PostgreSQL + Alembic) — also unblocks
+  the automated paper trading loop in Phase 2
 * ~~Integration test suite and CI/CD pipeline~~ ✅ Done — see `.github/workflows/test.yml`
 * Health and readiness endpoints
+* Rate limiting and abuse/cost control on `/analyze` (currently unauthenticated, and
+  a cache miss triggers a paid LLM run)
+* Fail-fast config validation at startup (e.g. `pydantic-settings`) instead of silent
+  failures on missing or misspelled env vars
+* Graceful Redis degradation — a cache outage should fall back to a cache miss, not
+  a 500
+* Frontend test suite (Vitest + React Testing Library) — currently no tests on
+  the UI at all
+* Hardening: lint/format/type-check CI job, fix the `alphavintage` → `alphavantage`
+  naming, rename `src/backtesting/` → `src/evaluation/` to match the "no classic
+  backtesting" design decision below
 
 ### Phase 2 — Signal Completeness
 * Wire remaining subagents: clinical (OpenFDA), macro (FRED), sentiment (Finnhub)
 * Paper trading loop: record decisions and track returns over time (manual today via
   `scripts/record_signal.py` / `scripts/evaluate_signals.py`)
 * Automate the paper trading loop to run on a schedule instead of by hand
-  (mechanism TBD)
+  (mechanism TBD; depends on Phase 1's persistent storage)
+* Deterministic ticker resolution (e.g. AlphaVantage symbol search) ahead of agent
+  reasoning, instead of relying on the LLM to infer tickers
+* Reject unresolvable or non-biotech queries before invoking the agent — a ticker
+  + sector gate (Finnhub `finnhubIndustry`) ahead of the paid LLM call, doubling as
+  cost control
+* System/prompt versioning derived automatically (git SHA + prompt hash) instead of
+  the manually-bumped `SYSTEM_VERSION` constant
+* Benchmark comparison in evaluation (always-BUY, random, sector return) so paper
+  trading accuracy is measured against a baseline instead of read in isolation
 * RAG over SEC filings (10-K/10-Q) for grounded, citable reasoning
 * Data quality validation layer
 
 ### Phase 3 — Scalability
 * Async task queue for agent execution (Celery + Redis)
 * Circuit breakers and retry logic per data provider
+* Move data-provider and Redis calls to true async I/O instead of blocking the
+  event loop
 
 ### Phase 4 — Observability
 * LLM tracing (LangSmith or Langfuse)
 * Metrics and centralized log aggregation
+* Cost and token usage tracking per request
 
 ### Phase 5 — ML Feedback Loop
 * Outcome tracking: link paper trades to actual price outcomes
-* Prompt versioning and A/B testing
+* A/B testing across prompt variants (building on the deterministic versioning
+  from Phase 2)
 * Fine-tuning on accumulated decision/outcome data
+
+### Phase 6 — Trust & Product Surface
+* Public track record dashboard showing paper trading performance, wins and
+  losses included
+* Surface the signal-level reasoning breakdown in the UI, not just the final
+  decision text
 
 ## Disclaimer
 Nothing in this repository constitutes to financial advice or a recommendation to trade securities.
