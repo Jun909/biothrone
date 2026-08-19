@@ -40,7 +40,7 @@ biosignalfoundry/
 │   │   ├── sec_edgar.py          # SEC filings and corporate data
 │   │   ├── openfda.py            # FDA drug and clinical data
 │   │   ├── marketstack.py        # Market data provider
-│   │   └── massive.py            # (Purpose TBD)
+│   │   └── massive.py            # OHLCV aggregate bars via the massive SDK
 │   │
 │   ├── core/                     # Core utilities and infrastructure
 │   │   ├── redis_client.py       # Redis client for caching and state management
@@ -59,13 +59,29 @@ biosignalfoundry/
 │   └── backtesting/              # Backtesting framework for signal validation
 │       ├── __init__.py
 │       ├── types.py              # Data structures (BacktestRequest, Signal, BacktestObservation, BacktestResult)
-│       ├── engine.py             # Backtesting engine (in development)
-│       └── price_loader.py       # Historical price data loader (in development)
+│       ├── engine.py             # Backtesting engine
+│       └── price_loader.py       # Historical price data loader
 │    
+│
+├── scripts/                      # Paper trading CLI scripts
+│   ├── record_signal.py          # Runs the agent for a ticker, logs a signal + entry price
+│   └── evaluate_signals.py       # Evaluates matured signals against actual exit prices
+│
+├── data/                         # Local data (gitignored except this note)
+│   └── paper_trades.json         # Signal log written/read by the scripts above
 │
 ├── tests/                        # Test suite
 │   ├── __init__.py
-│   └── test_backtesting_engine.py  # Mock-based tests for the backtesting engine
+│   ├── conftest.py                # Shared fixtures; stubs heavy deps (llm_provider, deepagents) via sys.modules
+│   ├── unit/                      # Mock-based tests, no live services
+│   │   ├── test_app_analyze.py
+│   │   ├── test_backtesting_engine.py
+│   │   ├── test_financial_health_tools.py
+│   │   └── test_streaming_callback.py
+│   └── integration/               # Tests that hit a real Redis instance
+│       ├── conftest.py
+│       ├── test_app_integration.py
+│       └── test_redis_cache.py
 │
 ├── docs/                         # Documentation
 │   ├── architecture_docs/        # Architecture and design documentation
@@ -114,7 +130,7 @@ Wrapper modules for external APIs. Each provider normalizes API responses into c
 - **sec_edgar.py**: SEC filings (10-K, 10-Q, 8-K)
 - **openfda.py**: FDA drug approvals, clinical trial data
 - **marketstack.py**: General market data
-- **massive.py**: (Purpose TBD)
+- **massive.py**: OHLCV aggregate bars via the `massive` SDK
 
 ### **src/core/**
 Common utilities and infrastructure:
@@ -136,22 +152,36 @@ Backtesting framework for validating trading signals against historical price da
 - **engine.py**: `run(request, signals) → BacktestResult`. For each signal, looks up entry price at `as_of_date` and exit price at `as_of_date + holding_period_days`, then computes `forward_return` and `is_correct` based on configurable `buy_threshold` / `sell_threshold`. Aggregates per-observation results into summary stats (`total_observations`, `correct_observations`, `accuracy`).
 - **price_loader.py**: `load_prices(ticker, start, end) → dict[date, float]` — fetches historical OHLCV data via MarketStack and returns a `{date: close_price}` map used by the engine.
 
+### **scripts/**
+CLI entry points for the paper trading loop described in the README's "On Backtesting" section:
+- **record_signal.py**: Runs the agent for a ticker (or the whole watchlist), records today's price as the entry point, and appends the signal to `data/paper_trades.json`.
+- **evaluate_signals.py**: Evaluates signals whose holding period has elapsed against actual exit prices, writing the result back into the same log so each signal is only evaluated once.
+
+### **data/**
+Local, gitignored output directory. Currently holds `paper_trades.json`, the append-only signal log read/written by the `scripts/` above.
+
 ### **docs/**
 Project documentation split into two sections:
 - **architecture_docs/**: Design and system architecture
 - **api_reference/**: External API documentation and examples
 
 ### **tests/**
-Mock-based unit tests for core engine logic. Heavy dependencies (data providers, API clients) are stubbed via `unittest.mock` and `sys.modules` injection so no live API calls are made.
+Split into `unit/` and `integration/`, matching the two CI jobs in `.github/workflows/test.yml`. `conftest.py` at the `tests/` root stubs heavy dependencies (`llm_provider`, `deepagents`) via `sys.modules` injection *before* test collection begins, so any test importing `app` or `src.*` gets safe mocks instead of raising on missing env vars or LLM setup.
 
-- **test_backtesting_engine.py**: Verifies `src.backtesting.engine.run` end-to-end. Patches `load_prices` with a fixed `{date: float}` price map and asserts correctness classification for all five `DecisionLabel` cases:
-  | Signal | Return | Expected |
-  |--------|--------|----------|
-  | `BUY` | +15% | correct (≥ 10% threshold) |
-  | `SELL` | −15% | correct (≤ −10% threshold) |
-  | `BUY` | +4% | incorrect (below 10% threshold) |
-  | `HOLD` | +3.75% | correct (within ±10% band) |
-  | `AVOID` | −13.3% | correct (≤ −10% threshold) |
+- **unit/**: No live services required; runs via `uv run pytest tests/unit/ -v`.
+  - **test_backtesting_engine.py**: Verifies `src.backtesting.engine.run` end-to-end. Patches `load_prices` with a fixed `{date: float}` price map and asserts correctness classification for all five `DecisionLabel` cases:
+    | Signal | Return | Expected |
+    |--------|--------|----------|
+    | `BUY` | +15% | correct (≥ 10% threshold) |
+    | `SELL` | −15% | correct (≤ −10% threshold) |
+    | `BUY` | +4% | incorrect (below 10% threshold) |
+    | `HOLD` | +3.75% | correct (within ±10% band) |
+    | `AVOID` | −13.3% | correct (≤ −10% threshold) |
+  - **test_app_analyze.py**: Tests the `POST /analyze` endpoint and its Redis caching behavior with a mocked agent.
+  - **test_financial_health_tools.py**: Tests `src/agent_tools/financial_health_agent_tools.py` against mocked data providers.
+  - **test_streaming_callback.py**: Tests `StreamingProgressCallback` (`src/core/streaming_callback.py`).
+- **integration/**: Requires a real Redis instance (see the `redis` service container in CI, or `docker-compose up redis` locally); runs via `uv run pytest tests/integration/ -v`.
+  - **test_app_integration.py**, **test_redis_cache.py**: Exercise the `/analyze` endpoint and Redis caching layer against a live Redis, with external APIs/LLM still mocked.
 
 ### **Configuration Files**
 - **config.py**: Centralized app configuration. Currently defines Redis connection settings (`REDIS_HOST`, `REDIS_PORT`, `REDIS_DB`), per-provider cache TTLs (`REDIS_CACHE_TTL_SECONDS_ALPHAVANTAGE`, `REDIS_CACHE_TTL_SECONDS_MARKETSTACK`), and reads `ALPHAVANTAGE_API_KEY` / `FINNHUB_API_KEY` from the environment.
