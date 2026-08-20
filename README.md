@@ -91,13 +91,13 @@ For these reasons, the evaluation strategy used here is **paper trading**: the a
 * Persistent storage of decisions and signals (PostgreSQL + Alembic) — also unblocks
   the automated paper trading loop in Phase 2
 * ~~Integration test suite and CI/CD pipeline~~ ✅ Done — see `.github/workflows/test.yml`
-* Health and readiness endpoints
+* ~~Health and readiness endpoints~~ ✅ Done — see `GET /health` and `GET /ready` in `app.py`
 * Rate limiting and abuse/cost control on `/analyze` (currently unauthenticated, and
   a cache miss triggers a paid LLM run)
 * Fail-fast config validation at startup (e.g. `pydantic-settings`) instead of silent
   failures on missing or misspelled env vars
-* Graceful Redis degradation — a cache outage should fall back to a cache miss, not
-  a 500
+* ~~Graceful Redis degradation — a cache outage should fall back to a cache miss, not
+  a 500~~ ✅ Done — `/analyze` treats Redis read/write failures as a cache miss/skip
 * Frontend test suite (Vitest + React Testing Library) — currently no tests on
   the UI at all
 * Hardening: lint/format/type-check CI job, ~~fix the `alphavintage` → `alphavantage`

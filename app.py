@@ -11,6 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from langchain.messages import HumanMessage
 from pydantic import BaseModel, Field
+from redis.exceptions import RedisError
 
 from config import REDIS_CACHE_TTL_SECONDS_BIOSIGNALFOUNDRY
 from src.biosignalfoundry import BioSignalFoundryOutput, biosignalfoundry
@@ -63,7 +64,11 @@ async def analyze(request: AnalyzeRequest):
 
     input_hash = hashlib.sha256(request.user_input.strip().lower().encode()).hexdigest()
     cache_key = f"biosignalfoundry:analyze:{input_hash}"
-    cached = redis_client.get(cache_key)
+    try:
+        cached = redis_client.get(cache_key)
+    except RedisError as e:
+        logger.warning("cache read failed, treating as cache miss", error=str(e))
+        cached = None
     if cached:
         logger.info("cache hit", user_input=request.user_input)
 
@@ -85,11 +90,14 @@ async def analyze(request: AnalyzeRequest):
             if isinstance(structured, BioSignalFoundryOutput):
                 logger.info("agent final response", agent_response=structured)
                 event = {"type": "result", "data": structured.model_dump()}
-                redis_client.setex(
-                    cache_key,
-                    REDIS_CACHE_TTL_SECONDS_BIOSIGNALFOUNDRY,
-                    json.dumps(event),
-                )
+                try:
+                    redis_client.setex(
+                        cache_key,
+                        REDIS_CACHE_TTL_SECONDS_BIOSIGNALFOUNDRY,
+                        json.dumps(event),
+                    )
+                except RedisError as e:
+                    logger.warning("cache write failed, skipping cache", error=str(e))
                 await queue.put(event)
             else:
                 logger.error(
