@@ -42,6 +42,21 @@ class AnalyzeRequest(BaseModel):
     user_input: str = Field(..., min_length=1, max_length=2000)
 
 
+@app.get("/health")
+async def health():
+    return {"status": "ok"}
+
+
+@app.get("/ready")
+async def ready():
+    try:
+        redis_client.ping()
+    except Exception as e:
+        logger.warning("readiness check failed", error=str(e))
+        raise HTTPException(status_code=503, detail="Redis unavailable")
+    return {"status": "ok"}
+
+
 @app.post("/analyze")
 async def analyze(request: AnalyzeRequest):
     logger.info("analyze request received", user_input=request.user_input)
