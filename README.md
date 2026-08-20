@@ -100,8 +100,8 @@ For these reasons, the evaluation strategy used here is **paper trading**: the a
   a 500
 * Frontend test suite (Vitest + React Testing Library) — currently no tests on
   the UI at all
-* Hardening: lint/format/type-check CI job, fix the `alphavintage` → `alphavantage`
-  naming, rename `src/backtesting/` → `src/evaluation/` to match the "no classic
+* Hardening: lint/format/type-check CI job, ~~fix the `alphavintage` → `alphavantage`
+  naming~~ ✅ Done, rename `src/backtesting/` → `src/evaluation/` to match the "no classic
   backtesting" design decision below
 
 ### Phase 2 — Signal Completeness
@@ -144,6 +144,20 @@ For these reasons, the evaluation strategy used here is **paper trading**: the a
   losses included
 * Surface the signal-level reasoning breakdown in the UI, not just the final
   decision text
+
+## Beyond MVP / Long-Term Vision
+Directional ideas for after Phases 1–6 are done — not scoped or scheduled yet,
+kept separate from the roadmap above on purpose.
+
+* **User accounts & personal dashboards** — auth, saved watchlists, per-user
+  decision history
+* **Automated monitoring & notifications** — scheduled/event-driven checks over
+  a user's watchlist, pushed via email
+* **AI with memory** — recommendations informed by a user's history and
+  preferences, not just a single stateless query (depends on user accounts
+  existing first)
+* **Discovery / news feed** — surfacing new biotech companies and sector news,
+  not just answering direct queries
 
 ## Disclaimer
 Nothing in this repository constitutes to financial advice or a recommendation to trade securities.

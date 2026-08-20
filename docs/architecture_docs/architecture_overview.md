@@ -34,7 +34,7 @@ biosignalfoundry/
 │   ├── data_providers/           # API wrappers for external data sources
 │   │   ├── __init__.py
 │   │   ├── base.py               # Base class for all data providers
-│   │   ├── alphavintage.py       # Stock price and technical analysis data
+│   │   ├── alphavantage.py       # Stock price and technical analysis data
 │   │   ├── finnhub.py            # Financial market data and company info
 │   │   ├── fred.py               # Federal Reserve economic data
 │   │   ├── sec_edgar.py          # SEC filings and corporate data
@@ -88,7 +88,7 @@ biosignalfoundry/
 │   │   └── architecture_overview.md     # This file - overall system architecture
 │   │
 │   └── api_reference/            # External API references
-│       ├── alphavintage_api.md
+│       ├── alphavantage_api.md
 │       ├── finnhub_api.md
 │       ├── fred_api.md
 │       ├── marketstack_api.md
@@ -124,7 +124,7 @@ Provides specialized functions (tools) that agents can invoke. The tools further
 ### **src/data_providers/**
 Wrapper modules for external APIs. Each provider normalizes API responses into consistent JSON format with metadata.
 - **base.py**: Abstract base class defining provider interface
-- **alphavintage.py**: Stock prices, moving averages, technical indicators
+- **alphavantage.py**: Stock prices, moving averages, technical indicators
 - **finnhub.py**: Company fundamentals, earnings, market cap
 - **fred.py**: Federal Reserve economic data (inflation, interest rates, etc.)
 - **sec_edgar.py**: SEC filings (10-K, 10-Q, 8-K)

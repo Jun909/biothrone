@@ -19,7 +19,7 @@ sys.modules.setdefault("config", _config_stub)
 
 for _mod in (
     "src.data_providers",
-    "src.data_providers.alphavintage",
+    "src.data_providers.alphavantage",
     "src.data_providers.finnhub",
     "src.data_providers.fred",
     "src.data_providers.massive",

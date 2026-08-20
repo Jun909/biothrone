@@ -13,11 +13,11 @@ from src.core.redis_client import redis_client
 from .base import BaseClient
 
 
-class AlphaVintageAPIClient(BaseClient):
+class AlphaVantageAPIClient(BaseClient):
     """
-    Thin Python wrapper for AlphaVintageAPIClient. Converts SDK objects to plain
+    Thin Python wrapper for AlphaVantageAPIClient. Converts SDK objects to plain
     dictionaries and returns metadata in a JSON-friendly structure.
-    AlphaVintage takes in ticker as parameter for most functions.
+    AlphaVantage takes in ticker as parameter for most functions.
     Example of ticker: "AAPL", "GOOGL", "MSFT", "AMZN" etc
     """
 
@@ -27,7 +27,7 @@ class AlphaVintageAPIClient(BaseClient):
         self.client_alpha_intelligence = AlphaIntelligence(key=api_key)
         self.client_econ_indicators = EconIndicators(key=api_key)
         self.client_fundamental_data = FundamentalData(key=api_key)
-        self.provider = "alphavintage"
+        self.provider = "alphavantage"
 
     def get_daily(self, ticker: str, outputsize: str = "compact"):
         return self._call(
