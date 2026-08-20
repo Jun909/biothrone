@@ -40,7 +40,7 @@ Project philosophy and roadmap: `README.md`.
   external APIs/LLM still mocked.
 
 ## Known rough edges (don't "fix" these without checking first)
-- `src/backtesting/` deliberately does NOT do classic historical backtesting —
+- `src/evaluation/` deliberately does NOT do classic historical backtesting —
   read the README's "On Backtesting" section before touching it; paper trading
   (`scripts/record_signal.py` + `scripts/evaluate_signals.py`) is the intended
   evaluation method instead.

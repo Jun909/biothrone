@@ -25,8 +25,8 @@ load_dotenv()
 
 from langchain.messages import HumanMessage
 
-from src.backtesting.price_loader import load_prices, nearest_price_backward
-from src.backtesting.types import DecisionLabel
+from src.evaluation.price_loader import load_prices, nearest_price_backward
+from src.evaluation.types import DecisionLabel
 from src.biosignalfoundry import BioSignalFoundryOutput, biosignalfoundry
 
 DECISION_MAP: dict[str, DecisionLabel] = {

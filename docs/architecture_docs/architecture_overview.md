@@ -56,10 +56,10 @@ biosignalfoundry/
 │   │   ├── biosignalfoundry_prompt.py               # Main system prompt
 │   │   └── financial_health_agent_prompt.py         # Financial health agent prompt
 │   │
-│   └── backtesting/              # Backtesting framework for signal validation
+│   └── evaluation/                # Signal evaluation framework for paper trading
 │       ├── __init__.py
 │       ├── types.py              # Data structures (BacktestRequest, Signal, BacktestObservation, BacktestResult)
-│       ├── engine.py             # Backtesting engine
+│       ├── engine.py             # Evaluation engine
 │       └── price_loader.py       # Historical price data loader
 │    
 │
@@ -75,7 +75,7 @@ biosignalfoundry/
 │   ├── conftest.py                # Shared fixtures; stubs heavy deps (llm_provider, deepagents) via sys.modules
 │   ├── unit/                      # Mock-based tests, no live services
 │   │   ├── test_app_analyze.py
-│   │   ├── test_backtesting_engine.py
+│   │   ├── test_evaluation_engine.py
 │   │   ├── test_financial_health_tools.py
 │   │   └── test_streaming_callback.py
 │   └── integration/               # Tests that hit a real Redis instance
@@ -146,8 +146,8 @@ LLM prompt templates:
 - **biosignalfoundry_prompt.py**: Master system prompt defining BioSignalFoundry's decision-making framework
 - **financial_health_agent_prompt.py**: Specialized prompt for the financial health agent
 
-### **src/backtesting/**
-Backtesting framework for validating trading signals against historical price data. Evaluates how well `BUY / SELL / HOLD / AVOID` signals predicted actual forward returns:
+### **src/evaluation/**
+Signal evaluation framework for validating paper trading signals against historical price data. Evaluates how well `BUY / SELL / HOLD / AVOID` signals predicted actual forward returns:
 - **types.py**: Core data structures — `BacktestRequest`, `Signal`, `DecisionLabel`, `BacktestObservation`, `BacktestResult`
 - **engine.py**: `run(request, signals) → BacktestResult`. For each signal, looks up entry price at `as_of_date` and exit price at `as_of_date + holding_period_days`, then computes `forward_return` and `is_correct` based on configurable `buy_threshold` / `sell_threshold`. Aggregates per-observation results into summary stats (`total_observations`, `correct_observations`, `accuracy`).
 - **price_loader.py**: `load_prices(ticker, start, end) → dict[date, float]` — fetches historical OHLCV data via MarketStack and returns a `{date: close_price}` map used by the engine.
@@ -169,7 +169,7 @@ Project documentation split into two sections:
 Split into `unit/` and `integration/`, matching the two CI jobs in `.github/workflows/test.yml`. `conftest.py` at the `tests/` root stubs heavy dependencies (`llm_provider`, `deepagents`) via `sys.modules` injection *before* test collection begins, so any test importing `app` or `src.*` gets safe mocks instead of raising on missing env vars or LLM setup.
 
 - **unit/**: No live services required; runs via `uv run pytest tests/unit/ -v`.
-  - **test_backtesting_engine.py**: Verifies `src.backtesting.engine.run` end-to-end. Patches `load_prices` with a fixed `{date: float}` price map and asserts correctness classification for all five `DecisionLabel` cases:
+  - **test_evaluation_engine.py**: Verifies `src.evaluation.engine.run` end-to-end. Patches `load_prices` with a fixed `{date: float}` price map and asserts correctness classification for all five `DecisionLabel` cases:
     | Signal | Return | Expected |
     |--------|--------|----------|
     | `BUY` | +15% | correct (≥ 10% threshold) |

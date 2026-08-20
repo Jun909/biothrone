@@ -23,7 +23,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-from src.backtesting.price_loader import load_prices, nearest_price
+from src.evaluation.price_loader import load_prices, nearest_price
 
 LOG_PATH = Path(__file__).resolve().parents[1] / "data" / "paper_trades.json"
 
