@@ -1,16 +1,22 @@
 import json
 
+import structlog
 from alpha_vantage.alphaintelligence import AlphaIntelligence
 from alpha_vantage.econindicators import EconIndicators
 from alpha_vantage.fundamentaldata import FundamentalData
 from alpha_vantage.techindicators import TechIndicators
 from alpha_vantage.timeseries import TimeSeries
+from redis.exceptions import RedisError
 
-from config import (REDIS_CACHE_TTL_SECONDS_ALPHAVANTAGE,
-                    REDIS_CACHE_TTL_SECONDS_ALPHAVANTAGE_ERROR)
+from config import (
+    REDIS_CACHE_TTL_SECONDS_ALPHAVANTAGE,
+    REDIS_CACHE_TTL_SECONDS_ALPHAVANTAGE_ERROR,
+)
 from src.core.redis_client import redis_client
 
 from .base import BaseClient
+
+logger = structlog.get_logger()
 
 
 class AlphaVantageAPIClient(BaseClient):
@@ -1483,7 +1489,11 @@ class AlphaVantageAPIClient(BaseClient):
 
     def get_income_statement_annual(self, ticker: str):
         cache_key = f"alphavantage:get_income_statement_annual:{ticker}"
-        cache_data = redis_client.get(cache_key)
+        try:
+            cache_data = redis_client.get(cache_key)
+        except RedisError as e:
+            logger.warning("cache read failed, treating as cache miss", error=str(e))
+            cache_data = None
         if cache_data:
             return json.loads(cache_data)  # type: ignore
 
@@ -1499,7 +1509,10 @@ class AlphaVantageAPIClient(BaseClient):
             if result.get("ok")
             else REDIS_CACHE_TTL_SECONDS_ALPHAVANTAGE_ERROR
         )
-        redis_client.setex(cache_key, ttl, json.dumps(result))
+        try:
+            redis_client.setex(cache_key, ttl, json.dumps(result))
+        except RedisError as e:
+            logger.warning("cache write failed, skipping cache", error=str(e))
 
         return result
 
