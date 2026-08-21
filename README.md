@@ -94,8 +94,8 @@ For these reasons, the evaluation strategy used here is **paper trading**: the a
 * ~~Health and readiness endpoints~~ ✅ Done — see `GET /health` and `GET /ready` in `app.py`
 * Rate limiting and abuse/cost control on `/analyze` (currently unauthenticated, and
   a cache miss triggers a paid LLM run)
-* Fail-fast config validation at startup (e.g. `pydantic-settings`) instead of silent
-  failures on missing or misspelled env vars
+* ~~Fail-fast config validation at startup (e.g. `pydantic-settings`) instead of silent
+  failures on missing or misspelled env vars~~ ✅ Done — see `Settings` in `config.py`
 * ~~Graceful Redis degradation — a cache outage should fall back to a cache miss, not
   a 500~~ ✅ Done — `/analyze` treats Redis read/write failures as a cache miss/skip
 * Frontend test suite (Vitest + React Testing Library) — currently no tests on

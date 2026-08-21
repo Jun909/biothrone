@@ -1,7 +1,6 @@
 import asyncio
 import hashlib
 import json
-from os import getenv
 from typing import List
 
 import uvicorn
@@ -13,7 +12,7 @@ from langchain.messages import HumanMessage
 from pydantic import BaseModel, Field
 from redis.exceptions import RedisError
 
-from config import REDIS_CACHE_TTL_SECONDS_BIOSIGNALFOUNDRY
+from config import REDIS_CACHE_TTL_SECONDS_BIOSIGNALFOUNDRY, settings
 from src.biosignalfoundry import BioSignalFoundryOutput, biosignalfoundry
 from src.core.logging_config import setup_logging
 from src.core.redis_client import redis_client
@@ -21,15 +20,16 @@ from src.core.streaming_callback import StreamingProgressCallback
 
 load_dotenv()
 logger = setup_logging(
-    log_level=getenv("LOG_LEVEL", "INFO"),
-    render_json=getenv("ENV") == "production",
+    log_level=settings.log_level,
+    render_json=settings.env == "production",
 )
 
 
 app = FastAPI()
 
-_raw_origins = getenv("ALLOWED_ORIGINS", "http://localhost:5173")
-allowed_origins: List[str] = [o.strip() for o in _raw_origins.split(",") if o.strip()]
+allowed_origins: List[str] = [
+    o.strip() for o in settings.allowed_origins.split(",") if o.strip()
+]
 
 app.add_middleware(
     CORSMiddleware,
