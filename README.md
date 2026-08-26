@@ -92,8 +92,10 @@ For these reasons, the evaluation strategy used here is **paper trading**: the a
   the automated paper trading loop in Phase 2
 * ~~Integration test suite and CI/CD pipeline~~ ✅ Done — see `.github/workflows/test.yml`
 * ~~Health and readiness endpoints~~ ✅ Done — see `GET /health` and `GET /ready` in `app.py`
-* Rate limiting and abuse/cost control on `/analyze` (currently unauthenticated, and
-  a cache miss triggers a paid LLM run)
+* ~~Rate limiting and abuse/cost control on `/analyze` (currently unauthenticated, and
+  a cache miss triggers a paid LLM run)~~ ✅ Done — per-IP rate limits + a global daily
+  budget cap on non-cached runs, see `src/core/rate_limiter.py` and `POST /analyze` in
+  `app.py`
 * ~~Fail-fast config validation at startup (e.g. `pydantic-settings`) instead of silent
   failures on missing or misspelled env vars~~ ✅ Done — see `Settings` in `config.py`
 * ~~Graceful Redis degradation — a cache outage should fall back to a cache miss, not

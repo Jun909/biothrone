@@ -13,12 +13,11 @@ class Settings(BaseSettings):
     redis_db: int = 0
     redis_password: str | None = None
 
-    # Data provider API keys — only providers actually wired into the live
-    # agent path are required. marketstack is provisioned but not yet
-    # consumed (see AGENTS.md roadmap), so it stays optional for now.
+    # Provider API keys
     alphavantage_api_key: str
     finnhub_api_key: str
     marketstack_api_key: str | None = None
+    # other providers (in the future when we wire them up)
 
     # LLM provider
     llm_provider: Literal["ollama", "deepseek"]
@@ -28,6 +27,11 @@ class Settings(BaseSettings):
     log_level: str = "INFO"
     env: str = "development"
     allowed_origins: str = "http://localhost:5173"
+
+    # Abuse / cost control on /analyze
+    rate_limit_per_minute: int = 5
+    rate_limit_per_day: int = 50
+    daily_analysis_budget_cap: int = 500
 
     @model_validator(mode="after")
     def _check_deepseek_key(self) -> "Settings":

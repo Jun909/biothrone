@@ -64,6 +64,21 @@ def http_client():
     return AsyncClient(transport=ASGITransport(app=app), base_url="http://test")
 
 
+@pytest.fixture(autouse=True)
+def _bypass_rate_limit_and_budget():
+    """These tests exercise caching/agent behavior, not rate limiting or the
+    daily budget cap — those get their own tests in test_app_rate_limit.py.
+    Without this, every request here would hit the real (unmocked)
+    check_rate_limit/check_and_consume_daily_budget, which try real Redis
+    I/O — exactly what tests/unit/ must not depend on.
+    """
+    with (
+        patch.object(app_module, "check_rate_limit", return_value=(True, 0)),
+        patch.object(app_module, "check_and_consume_daily_budget", return_value=True),
+    ):
+        yield
+
+
 # ---------------------------------------------------------------------------
 # Test 1 — cache hit must skip the agent entirely
 # ---------------------------------------------------------------------------

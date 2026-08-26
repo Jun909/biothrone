@@ -25,9 +25,9 @@ load_dotenv()
 
 from langchain.messages import HumanMessage
 
+from src.biosignalfoundry import BioSignalFoundryOutput, biosignalfoundry
 from src.evaluation.price_loader import load_prices, nearest_price_backward
 from src.evaluation.types import DecisionLabel
-from src.biosignalfoundry import BioSignalFoundryOutput, biosignalfoundry
 
 DECISION_MAP: dict[str, DecisionLabel] = {
     "buy": DecisionLabel.BUY,
@@ -43,21 +43,21 @@ SYSTEM_VERSION = "v1.0"
 # Fixed watchlist for unbiased weekly coverage.
 # Edit this list to add/remove tickers; run with no positional argument to process all of them.
 WATCHLIST: list[str] = [
-    "AMGN",   # Amgen — large-cap benchmark
-    "GILD",   # Gilead Sciences
-    "REGN",   # Regeneron
-    "VRTX",   # Vertex Pharmaceuticals
-    "BIIB",   # Biogen
-    "ALNY",   # Alnylam — RNA therapeutics
-    "SRPT",   # Sarepta Therapeutics
-    "BMRN",   # BioMarin Pharmaceutical
-    "IONS",   # Ionis Pharmaceuticals
-    "EXEL",   # Exelixis
-    "MRNA",   # Moderna
-    "HALO",   # Halozyme Therapeutics
-    "ACAD",   # ACADIA Pharmaceuticals
-    "RARE",   # Ultragenyx
-    "PTGX",   # Protagonist Therapeutics
+    "AMGN",  # Amgen — large-cap benchmark
+    "GILD",  # Gilead Sciences
+    "REGN",  # Regeneron
+    "VRTX",  # Vertex Pharmaceuticals
+    "BIIB",  # Biogen
+    "ALNY",  # Alnylam — RNA therapeutics
+    "SRPT",  # Sarepta Therapeutics
+    "BMRN",  # BioMarin Pharmaceutical
+    "IONS",  # Ionis Pharmaceuticals
+    "EXEL",  # Exelixis
+    "MRNA",  # Moderna
+    "HALO",  # Halozyme Therapeutics
+    "ACAD",  # ACADIA Pharmaceuticals
+    "RARE",  # Ultragenyx
+    "PTGX",  # Protagonist Therapeutics
 ]
 
 LOG_PATH = Path(__file__).resolve().parents[1] / "data" / "paper_trades.json"

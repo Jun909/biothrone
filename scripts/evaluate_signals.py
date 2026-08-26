@@ -157,7 +157,8 @@ def main() -> None:
             n = len(rs)
             thresh = sum(1 for r in rs if r["outcome"]["is_correct"])
             direc = sum(
-                1 for r in rs
+                1
+                for r in rs
                 if _direction_correct(r["decision"], r["outcome"]["forward_return"])
             )
             avg_ret = sum(r["outcome"]["forward_return"] for r in rs) / n
@@ -216,18 +217,14 @@ def main() -> None:
 
         # ── Confidence calibration ────────────────────────────────────
         CONF_BUCKETS = [
-            ("<60%",   lambda c: c < 0.60),
+            ("<60%", lambda c: c < 0.60),
             ("60–70%", lambda c: 0.60 <= c < 0.70),
             ("70–80%", lambda c: 0.70 <= c < 0.80),
-            ("≥80%",   lambda c: c >= 0.80),
+            ("≥80%", lambda c: c >= 0.80),
         ]
 
         print(f"\n  Confidence calibration")
-        print(
-            f"  {'':12} {'N':>4}"
-            f"  {'Threshold':>9}"
-            f"  {'Direction':>9}"
-        )
+        print(f"  {'':12} {'N':>4}" f"  {'Threshold':>9}" f"  {'Direction':>9}")
         print(SEP)
         for label, pred in CONF_BUCKETS:
             rs = [r for r in all_evaluated if pred(r["confidence"])]
@@ -236,7 +233,8 @@ def main() -> None:
             n = len(rs)
             thresh = sum(1 for r in rs if r["outcome"]["is_correct"])
             direc = sum(
-                1 for r in rs
+                1
+                for r in rs
                 if _direction_correct(r["decision"], r["outcome"]["forward_return"])
             )
             print(

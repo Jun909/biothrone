@@ -28,10 +28,12 @@ from redis.exceptions import ConnectionError as RedisConnectionError
 import src.data_providers.alphavantage as alphavantage_module
 import src.data_providers.finnhub as finnhub_module
 import src.data_providers.marketstack as marketstack_module
-from config import (REDIS_CACHE_TTL_SECONDS_ALPHAVANTAGE,
-                    REDIS_CACHE_TTL_SECONDS_ALPHAVANTAGE_ERROR,
-                    REDIS_CACHE_TTL_SECONDS_FINNHUB,
-                    REDIS_CACHE_TTL_SECONDS_MARKETSTACK)
+from config import (
+    REDIS_CACHE_TTL_SECONDS_ALPHAVANTAGE,
+    REDIS_CACHE_TTL_SECONDS_ALPHAVANTAGE_ERROR,
+    REDIS_CACHE_TTL_SECONDS_FINNHUB,
+    REDIS_CACHE_TTL_SECONDS_MARKETSTACK,
+)
 from src.data_providers.alphavantage import AlphaVantageAPIClient
 from src.data_providers.finnhub import FinnHubAPIClient
 from src.data_providers.marketstack import MarketStackAPIClient
