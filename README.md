@@ -100,8 +100,9 @@ For these reasons, the evaluation strategy used here is **paper trading**: the a
   failures on missing or misspelled env vars~~ ✅ Done — see `Settings` in `config.py`
 * ~~Graceful Redis degradation — a cache outage should fall back to a cache miss, not
   a 500~~ ✅ Done — `/analyze` treats Redis read/write failures as a cache miss/skip
-* Frontend test suite (Vitest + React Testing Library) — currently no tests on
-  the UI at all
+* ~~Frontend test suite (Vitest + React Testing Library) — currently no tests on
+  the UI at all~~ ✅ Done — see `ui/src/App.test.tsx` and
+  `ui/src/api/biosignalfoundry.test.ts`, run with `npm run test` in `ui/`
 * Hardening: lint/format/type-check CI job, ~~fix the `alphavintage` → `alphavantage`
   naming~~ ✅ Done, ~~rename `src/backtesting/` → `src/evaluation/` to match the "no classic
   backtesting" design decision below~~ ✅ Done

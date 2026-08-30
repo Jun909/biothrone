@@ -3,13 +3,8 @@ from __future__ import annotations
 from datetime import timedelta
 
 from src.evaluation.price_loader import load_prices, nearest_price
-from src.evaluation.types import (
-    BacktestObservation,
-    BacktestRequest,
-    BacktestResult,
-    DecisionLabel,
-    Signal,
-)
+from src.evaluation.types import (BacktestObservation, BacktestRequest,
+                                  BacktestResult, DecisionLabel, Signal)
 
 
 def _is_correct(

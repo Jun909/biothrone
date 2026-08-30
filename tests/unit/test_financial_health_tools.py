@@ -18,9 +18,7 @@ import pytest
 
 import src.agent_tools.financial_health_agent_tools as tools_module
 from src.agent_tools.financial_health_agent_tools import (
-    _process_company_profile,
-    _process_income_statement,
-)
+    _process_company_profile, _process_income_statement)
 
 # ---------------------------------------------------------------------------
 # Shared fixtures

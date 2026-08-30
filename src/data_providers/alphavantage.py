@@ -8,10 +8,8 @@ from alpha_vantage.techindicators import TechIndicators
 from alpha_vantage.timeseries import TimeSeries
 from redis.exceptions import RedisError
 
-from config import (
-    REDIS_CACHE_TTL_SECONDS_ALPHAVANTAGE,
-    REDIS_CACHE_TTL_SECONDS_ALPHAVANTAGE_ERROR,
-)
+from config import (REDIS_CACHE_TTL_SECONDS_ALPHAVANTAGE,
+                    REDIS_CACHE_TTL_SECONDS_ALPHAVANTAGE_ERROR)
 from src.core.redis_client import redis_client
 
 from .base import BaseClient

@@ -11,7 +11,8 @@ a live Redis server.
 
 from unittest.mock import MagicMock, patch
 
-from src.core.rate_limiter import check_and_consume_daily_budget, check_rate_limit
+from src.core.rate_limiter import (check_and_consume_daily_budget,
+                                   check_rate_limit)
 
 
 def _fake_pipeline_factory(execute_results):

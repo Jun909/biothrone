@@ -24,7 +24,8 @@ Project philosophy and roadmap: `README.md`.
 - `uv lock --check` — run after any `pyproject.toml` change
 - `uv run pytest tests/unit/ -v` — mocked, no live services
 - `uv run pytest tests/integration/ -v` — needs Redis running
-- Frontend: `npm run lint`, `npm run build`
+- Frontend: `npm run lint`, `npm run build`, `npm run test` (Vitest + React Testing Library;
+  `npm run test:watch` for local dev)
 
 ## Code style
 - `black` + `isort` are project deps (`uv run black .`, `uv run isort .`) — not

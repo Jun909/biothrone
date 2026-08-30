@@ -15,7 +15,8 @@ from redis.exceptions import RedisError
 from config import REDIS_CACHE_TTL_SECONDS_BIOSIGNALFOUNDRY, settings
 from src.biosignalfoundry import BioSignalFoundryOutput, biosignalfoundry
 from src.core.logging_config import setup_logging
-from src.core.rate_limiter import check_and_consume_daily_budget, check_rate_limit
+from src.core.rate_limiter import (check_and_consume_daily_budget,
+                                   check_rate_limit)
 from src.core.redis_client import redis_client
 from src.core.streaming_callback import StreamingProgressCallback
 
