@@ -103,7 +103,9 @@ For these reasons, the evaluation strategy used here is **paper trading**: the a
 * ~~Frontend test suite (Vitest + React Testing Library) — currently no tests on
   the UI at all~~ ✅ Done — see `ui/src/App.test.tsx` and
   `ui/src/api/biosignalfoundry.test.ts`, run with `npm run test` in `ui/`
-* Hardening: lint/format/type-check CI job, ~~fix the `alphavintage` → `alphavantage`
+* ~~Hardening: lint/format/type-check CI job~~ ✅ Done (frontend) — `.github/workflows/test.yml`
+  now runs `npm run lint`, `npm run build`, `npm run test`; Python `black`/`isort`/type-check
+  still not enforced in CI, ~~fix the `alphavintage` → `alphavantage`
   naming~~ ✅ Done, ~~rename `src/backtesting/` → `src/evaluation/` to match the "no classic
   backtesting" design decision below~~ ✅ Done
 
